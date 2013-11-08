@@ -1,8 +1,43 @@
+<style>
+	body {
+		line-height: 1.6em;
+	} 
+	
+	table
+	{
+		font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+		font-size: 12px;
+		background: #fff;
+		margin: 45px;
+		width: 480px;
+		border-collapse: collapse;
+		text-align: left;
+	}
+	table th
+	{
+		font-size: 14px;
+		font-weight: normal;
+		color: #039;
+		padding: 10px 8px;
+		border-bottom: 2px solid #6678b1;
+	}
+	table td
+	{
+		color: #669;
+		padding: 9px 8px 0px 8px;
+	}
+	table tbody tr:hover td
+	{
+		color: #009;
+	}
+
+</style>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
 </script>
 <script>
 	//This is the URL to a spreadsheet
-	var url = "https://docs.google.com/spreadsheet/ccc?key=0Aqv3NjQVGHDbdDdxOTRzZzRFdmJWb0owV1FPdDI1bUE"
+	var url = "https://docs.google.com/spreadsheet/pub?key=0Aqv3NjQVGHDbdFRIOElEVnpOTEhqVkNYd1l2LWY2TkE&output=html"
 
 	//parseURL: URL String -> [key:String, worksheet: String]
 	//Extracts the spreadsheet key and worksheet id
@@ -40,6 +75,35 @@
 		return ret
 	}
 
+	//Returns the table as an HTML screen
+	function renderTable(data) {
+		//First turn the data into cols
+		var headers = [], cols = []
+		for (var key in data) {
+			headers.push(key);
+			cols.push(data[key])
+		}
+		//Transpose the rows
+		var rows = cols[0].map(function(col, i) { 
+		  return cols.map(function(row) { 
+		    return row[i] 
+		  })
+		});
+
+		//Create a table string
+		var s = "<table class='table'><thead><tr>";
+		headers.forEach(function(h) {s+="<th>" + h + "</th>"});
+		s += "</tr></thead><tbody>"
+		rows.forEach(function(row) { 
+			s += "<tr>"
+			row.forEach(function (e) { s+="<td>" + e + "</td>";})
+			s += "</tr>"
+		})
+		s += "</tbody></table>"
+		console.log(s);
+		return s
+	}
+
 	//Hit play!
 	$.ajax({
 		url: apiURL(parseURL(url))
@@ -50,6 +114,7 @@
 		for (var key in myObject) {
 			console.log(key + ": "+ myObject[key]);
 		}
+		$("#t").append(renderTable(myObject));
 	}).done()
-	
 </script>
+<div id="t"></div>
