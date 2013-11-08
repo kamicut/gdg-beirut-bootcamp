@@ -1,0 +1,55 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+	//This is the URL to a spreadsheet
+	var url = "https://docs.google.com/spreadsheet/ccc?key=0Aqv3NjQVGHDbdDdxOTRzZzRFdmJWb0owV1FPdDI1bUE"
+
+	//parseURL: URL String -> [key:String, worksheet: String]
+	//Extracts the spreadsheet key and worksheet id
+	function parseURL(url) {
+		var key; var worksheet = 'od6';
+		var params = url.slice(url.indexOf("?") + 1).split('&');
+
+		params.forEach(function(param) {
+			kv = param.split("=");
+			if (kv[0] == "key") key = kv[1]
+			if (kv[0] == "worksheet") worksheet= kv[1]
+		})
+
+		return [key, worksheet]
+	}
+
+	//apiURL: [key: String, worksheet: String] -> URL String
+	function apiURL(extracted) {
+		var key = extracted[0], worksheet = extracted[1]
+		return "https://spreadsheets.google.com/feeds/list/" + key + "/" + worksheet + "/public/values?alt=json"
+	}
+
+	//parseContent: JS Object from Google -> JS Object without Google metadata
+	function parseContent(data) {
+		var ret = {}
+		data.feed.entry.forEach(function(entry) {
+			for (var key in entry) {
+				if (key.indexOf("gsx$") !== -1) {
+					var k = key.slice(4);
+					if (ret[k]) ret[k] = [entry[key]["$t"]].concat(ret[k])
+					else ret[k]= [entry[key]["$t"]]
+				}
+			}
+		})
+		return ret
+	}
+
+	//Hit play!
+	$.ajax({
+		url: apiURL(parseURL(url))
+	}).then(function(data) {
+		return parseContent(data)
+	}).then(function(myObject) {
+		//Print!
+		for (var key in myObject) {
+			console.log(key + ": "+ myObject[key]);
+		}
+	}).done()
+	
+</script>
