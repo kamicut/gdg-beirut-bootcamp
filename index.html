@@ -75,7 +75,7 @@
 		return ret
 	}
 
-	//Returns the table as an HTML screen
+	//renderTable: Table Data -> HTML String
 	function renderTable(data) {
 		//First turn the data into cols
 		var headers = [], cols = []
@@ -83,7 +83,7 @@
 			headers.push(key);
 			cols.push(data[key])
 		}
-		//Transpose the rows
+		//Transpose the cols into rows
 		var rows = cols[0].map(function(col, i) { 
 		  return cols.map(function(row) { 
 		    return row[i] 
@@ -100,7 +100,6 @@
 			s += "</tr>"
 		})
 		s += "</tbody></table>"
-		console.log(s);
 		return s
 	}
 
